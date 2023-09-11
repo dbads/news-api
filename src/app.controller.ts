@@ -1,22 +1,26 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, UseInterceptors, Query } from '@nestjs/common';
 import { AppService } from './app.service';
-import { newsQueryDTO, newsSearchDTO } from './news-dtos';
+import { NewsQueryDTO, NewsSearchDTO, NewsType } from './news-dtos';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('news')
+@UseInterceptors(CacheInterceptor) // auto cache each route, route becomes key and ttl is default
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    ) {}
 
   @Get()
   getNews(
-    @Query() query: newsQueryDTO
-  ): Promise<any> {
+    @Query() query: NewsQueryDTO
+  ): Promise<NewsType[]> {
     return this.appService.getNews(query);
   }
   
   @Get('/search')
   searchNews(
-    @Query() query: newsSearchDTO
-  ): Promise<any> {
+    @Query() query: NewsSearchDTO
+  ): Promise<NewsType[]> {
     return this.appService.searchNews(query);
   }
 }
