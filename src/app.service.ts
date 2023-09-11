@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { newsQueryDTO, newsSearchDTO } from './news-dtos';
+import { NewsQueryDTO, NewsSearchDTO, NewsType } from './news-dtos';
 
 @Injectable()
 export class AppService {
@@ -12,25 +12,34 @@ export class AppService {
 
   API_KEY = process.env.NEWS_API_KEY;
 
+  /**
+   * takes input no of articles, and returns top n news articles
+   * @query - input parameters such as no of articles requested
+   * @returns - list of matching articles
+   */
   async getNews(
-    query: newsQueryDTO
-  ): Promise<any> {
+    query: NewsQueryDTO
+  ): Promise<NewsType[]> {
     try {  
       // top headlines
-      console.log(this.API_KEY)
       const topHeadlinesUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=en&country=us&max=${query.articleCount}&apikey=${this.API_KEY}`
       const topHeadLines = await firstValueFrom(this.httpService.get(topHeadlinesUrl, {  }));
-      console.log(topHeadLines.data)
-      return topHeadLines.data;
+
+      return topHeadLines?.data?.articles;
     } catch (error) {
       console.log(`[ERROR] ${error}`)
       throw new Error(error.message)
     }
   }
   
+  /**
+   * takes input the query parameters and return matching news articles
+   * @param query - query parameters
+   * @returns - list of matching articles
+   */
   async searchNews(
-    query: newsSearchDTO
-  ): Promise<any> {
+    query: NewsSearchDTO
+  ): Promise<NewsType[]> {
     try {  
       console.log('searching news ... ');
       const title = query.title;
@@ -44,7 +53,7 @@ export class AppService {
       
       const foundNews = await firstValueFrom(this.httpService.get(newsSearchUrl, {  }));
       
-      return foundNews.data;
+      return foundNews?.data?.articles;
     } catch (error) {
       console.log(`[ERROR] ${error}`)
       throw new Error(error.message)
