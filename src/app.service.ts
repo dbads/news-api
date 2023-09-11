@@ -1,4 +1,4 @@
-import { Controller, Get, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { newsQueryDTO, newsSearchDTO } from './news-dtos';
@@ -6,10 +6,10 @@ import { newsQueryDTO, newsSearchDTO } from './news-dtos';
 @Injectable()
 export class AppService {
   constructor(
-  private readonly httpService: HttpService,
+  private readonly httpService: HttpService
   ) {
   }
-  
+
   API_KEY = process.env.NEWS_API_KEY;
 
   async getNews(
@@ -32,13 +32,13 @@ export class AppService {
     query: newsSearchDTO
   ): Promise<any> {
     try {  
+      console.log('searching news ... ');
       const title = query.title;
       const authorName = query.authorName;
 
       let newsSearchUrl = `https://gnews.io/api/v4/search?q=example&lang=en&country=us&max=${query.articleCount}&apikey=${this.API_KEY}`
       if (title)
         newsSearchUrl = `https://gnews.io/api/v4/search?q=${title}&lang=en&country=us&max=${query.articleCount}&apikey=${this.API_KEY}`
-        console.log(newsSearchUrl, 'url')
       if (authorName)
         newsSearchUrl = `https://gnews.io/api/v4/search?q=${authorName}&lang=en&country=us&max=${query.articleCount}&apikey=${this.API_KEY}`
       

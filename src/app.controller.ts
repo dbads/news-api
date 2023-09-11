@@ -1,10 +1,14 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, UseInterceptors, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { newsQueryDTO, newsSearchDTO } from './news-dtos';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('news')
+@UseInterceptors(CacheInterceptor)
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    ) {}
 
   @Get()
   getNews(
