@@ -19,4 +19,4 @@ localhost:3000/news/search?author="Author name"
 
 
 ##### Also updated the same in the GitHub repo - readme.md file
-
+##### I have pushed .env file for now, but ideally we should put .env in gitignore
