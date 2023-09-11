@@ -1,12 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { AppService } from './app.service';
+import { newsQueryDTO } from './news-dtos';
 
-@Controller()
+@Controller('news')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getNews(
+    @Query() query: newsQueryDTO
+  ): Promise<any> {
+    return this.appService.getNews(query);
   }
 }
