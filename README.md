@@ -6,6 +6,11 @@ yarn install // install dependencies
 
 yarn start:dev // starting dev server
 
+add a .env file in root directory, put follwoing in .env file
+
+NEWS_API_END_POINT="https://gnews.io/api/v4"
+
+NEWS_API_KEY="1670656c2ef0be86408e10a60c5f3808"
 
 ### APIs
 
