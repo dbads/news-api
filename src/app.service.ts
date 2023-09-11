@@ -1,29 +1,53 @@
 import { Controller, Get, Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { newsQueryDTO } from './news-dtos';
+import { newsQueryDTO, newsSearchDTO } from './news-dtos';
 
 @Injectable()
 export class AppService {
   constructor(
   private readonly httpService: HttpService,
-  ) {}
+  ) {
+  }
+  
+  API_KEY = process.env.NEWS_API_KEY;
 
   async getNews(
     query: newsQueryDTO
   ): Promise<any> {
-    const newsUrlAPIEndPoint = process.env.NEWS_API_URL;
-    // const API_KEY = process.env.NEWS_API_KEY;
-    // https://gnews.io/api/v4/search?q=example&lang=en&country=us&max=10&apikey=1670656c2ef0be86408e10a60c5f3808
-    // console.log(newsUrlAPIURL);
+    try {  
+      // top headlines
+      console.log(this.API_KEY)
+      const topHeadlinesUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=en&country=us&max=${query.articleCount}&apikey=${this.API_KEY}`
+      const topHeadLines = await firstValueFrom(this.httpService.get(topHeadlinesUrl, {  }));
+      console.log(topHeadLines.data)
+      return topHeadLines.data;
+    } catch (error) {
+      console.log(`[ERROR] ${error}`)
+      throw new Error(error.message)
+    }
+  }
+  
+  async searchNews(
+    query: newsSearchDTO
+  ): Promise<any> {
+    try {  
+      const title = query.title;
+      const authorName = query.authorName;
 
-    // fetch('https://example.com/data') .then(response => response.json()) .then(data => console.log(data)) .catch(error => console.error(error)); 
-
-
-    // top headlines
-    const topHeadlinesUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=en&country=us&max=${query.articleCount}&apikey=1670656c2ef0be86408e10a60c5f3808`
-    const topHeadLines = await firstValueFrom(this.httpService.get(topHeadlinesUrl, {  }));
-    console.log(topHeadLines.data)
-    return topHeadLines.data;
+      let newsSearchUrl = `https://gnews.io/api/v4/search?q=example&lang=en&country=us&max=${query.articleCount}&apikey=${this.API_KEY}`
+      if (title)
+        newsSearchUrl = `https://gnews.io/api/v4/search?q=${title}&lang=en&country=us&max=${query.articleCount}&apikey=${this.API_KEY}`
+        console.log(newsSearchUrl, 'url')
+      if (authorName)
+        newsSearchUrl = `https://gnews.io/api/v4/search?q=${authorName}&lang=en&country=us&max=${query.articleCount}&apikey=${this.API_KEY}`
+      
+      const foundNews = await firstValueFrom(this.httpService.get(newsSearchUrl, {  }));
+      
+      return foundNews.data;
+    } catch (error) {
+      console.log(`[ERROR] ${error}`)
+      throw new Error(error.message)
+    }
   }
 }

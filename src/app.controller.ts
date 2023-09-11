@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { AppService } from './app.service';
-import { newsQueryDTO } from './news-dtos';
+import { newsQueryDTO, newsSearchDTO } from './news-dtos';
 
 @Controller('news')
 export class AppController {
@@ -11,5 +11,12 @@ export class AppController {
     @Query() query: newsQueryDTO
   ): Promise<any> {
     return this.appService.getNews(query);
+  }
+  
+  @Get('/search')
+  searchNews(
+    @Query() query: newsSearchDTO
+  ): Promise<any> {
+    return this.appService.searchNews(query);
   }
 }
